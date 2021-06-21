@@ -8,6 +8,7 @@ let voiceChannel: Discord.VoiceChannel;
 let guild: Discord.Guild;
 let user: Discord.GuildMember;
 let notStreamingMessage: Discord.Message | null = null;
+let giftCardRevealed = false;
 
 const client = new Discord.Client();
 
@@ -16,7 +17,7 @@ async function revealGiftCard() {
     `${user.toString()} hasn't been streaming video for 15 minutes. Gift card code: ${process
       .env.GIFT_CARD_CODE!}`
   );
-  process.exit(0);
+  giftCardRevealed = true;
 }
 
 function doesUserHaveVideo() {
@@ -24,6 +25,9 @@ function doesUserHaveVideo() {
 }
 
 async function checkStreaming() {
+  // Don't perform any checks if the gift card has already been revealed
+  if (giftCardRevealed) return;
+
   // If it's before 8:30AM or past 9:30PM, return
   const date = new Date();
 
