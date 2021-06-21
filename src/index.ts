@@ -20,6 +20,17 @@ async function revealGiftCard() {
 async function checkStreaming() {
   // If it's before 8:30AM or past 9:30PM, return
   const date = new Date();
+
+  // Before 8:30AM
+  if (date.getHours() * 60 + date.getMinutes() < 8 * 60 + 30) {
+    return;
+  }
+
+  // Past 9:30PM
+  if (date.getHours() * 60 + date.getMinutes() > 21 * 60 + 30) {
+    return;
+  }
+
   if (!user.voice.selfVideo) {
     await updatesChannel.send("LeonStreams is not streaming his video...");
     timeout = setTimeout(async () => {
