@@ -18,6 +18,8 @@ async function revealGiftCard() {
 }
 
 async function checkStreaming() {
+  // If it's before 8:30AM or past 9:30PM, return
+  const date = new Date();
   if (!user.voice.selfVideo) {
     await updatesChannel.send("LeonStreams is not streaming his video...");
     timeout = setTimeout(async () => {
@@ -54,6 +56,8 @@ client.on("ready", async () => {
   schedule.scheduleJob("30 8 * * *", () => {
     checkStreaming();
   });
+
+  checkStreaming();
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
