@@ -36,6 +36,8 @@ async function checkStreaming() {
     timeout = setTimeout(async () => {
       await revealGiftCard();
     }, 1000 * 60 * 30);
+  } else {
+    clearTimeout(timeout);
   }
 }
 
