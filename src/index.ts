@@ -16,6 +16,7 @@ async function revealGiftCard() {
     `${user.toString()} hasn't been streaming video for 15 minutes. Gift card code: ${process
       .env.GIFT_CARD_CODE!}`
   );
+  process.exit(0);
 }
 
 async function doesUserHaveVideo() {
