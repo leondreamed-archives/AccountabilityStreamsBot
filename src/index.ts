@@ -1,5 +1,5 @@
 import "dotenv/config";
-import Discord, { NewsChannel, ReactionUserManager } from "discord.js";
+import Discord from "discord.js";
 import schedule from "node-schedule";
 
 let timeout: NodeJS.Timeout;
