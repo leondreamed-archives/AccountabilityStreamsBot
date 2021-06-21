@@ -37,7 +37,10 @@ async function checkStreaming() {
         `${user.toString()} is not streaming his video...`
       );
       timeout = setTimeout(async () => {
-        await revealGiftCard();
+        // If the user still hasn't started streaming video by this time, then reveal the gift card
+        if (!user.voice.selfVideo) {
+          await revealGiftCard();
+        }
       }, 1000 * 60 * 30);
     }
   } else {
