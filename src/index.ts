@@ -20,7 +20,8 @@ async function revealGiftCard() {
 }
 
 async function doesUserHaveVideo() {
-  return user.voice.channel && user.voice.selfVideo;
+  console.log(user.voice.channel, user.voice.selfVideo);
+  return user.voice.channel !== null && user.voice.channelID === process.env.VOICE_CHANNEL_ID && user.voice.selfVideo;
 }
 
 async function checkStreaming() {
