@@ -13,7 +13,7 @@ const client = new Discord.Client();
 
 async function revealGiftCard() {
   await updatesChannel.send(
-    `${user.toString()} has been offline for 30 minutes. Gift card code: ${process
+    `${user.toString()} hasn't been streaming video for 15 minutes. Gift card code: ${process
       .env.GIFT_CARD_CODE!}`
   );
 }
@@ -35,25 +35,25 @@ async function checkStreaming() {
   if (!user.voice.channel || !user.voice.selfVideo) {
     console.info("User is not streaming his video...");
     if (timeout === null) {
+      timeout = setTimeout(async () => {
+        // If the user still hasn't started streaming video by 15 mins, then reveal the gift card
+        if (!user.voice.selfVideo) {
+          await revealGiftCard();
+        }
+      }, 1000 * 60 * 15);
       let message = await updatesChannel.send(
         `${user.toString()} is not streaming his video...`
       );
       notStreamingMessage = message;
-      timeout = setTimeout(async () => {
-        // If the user still hasn't started streaming video by this time, then reveal the gift card
-        if (!user.voice.selfVideo) {
-          await revealGiftCard();
-        }
-      }, 1000 * 60 * 30);
     }
   } else {
-    notStreamingMessage?.delete();
-    notStreamingMessage = null;
     console.info("User is streaming his video and the timeout was cleared.");
     if (timeout !== null) {
       clearTimeout(timeout);
     }
     timeout = null;
+    await notStreamingMessage?.delete();
+    notStreamingMessage = null;
   }
 }
 
