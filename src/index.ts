@@ -19,8 +19,7 @@ async function revealGiftCard() {
   process.exit(0);
 }
 
-async function doesUserHaveVideo() {
-  console.log(user.voice.channel, user.voice.selfVideo);
+function doesUserHaveVideo() {
   return user.voice.channel !== null && user.voice.channelID === process.env.VOICE_CHANNEL_ID && user.voice.selfVideo;
 }
 
