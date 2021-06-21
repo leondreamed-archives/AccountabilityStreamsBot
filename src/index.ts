@@ -2,11 +2,12 @@ import "dotenv/config";
 import Discord from "discord.js";
 import schedule from "node-schedule";
 
-let timeout: NodeJS.Timeout;
+let timeout: NodeJS.Timeout | null = null;
 let updatesChannel: Discord.TextChannel;
 let voiceChannel: Discord.VoiceChannel;
 let guild: Discord.Guild;
 let user: Discord.GuildMember;
+let notStreamingMessage: Discord.Message | null = null;
 
 const client = new Discord.Client();
 
@@ -31,11 +32,13 @@ async function checkStreaming() {
     return;
   }
 
-  if (!user.voice.selfVideo) {
-    if (!timeout) {
-      await updatesChannel.send(
+  if (!user.voice.channel || !user.voice.selfVideo) {
+    console.info("User is not streaming his video...");
+    if (timeout === null) {
+      let message = await updatesChannel.send(
         `${user.toString()} is not streaming his video...`
       );
+      notStreamingMessage = message;
       timeout = setTimeout(async () => {
         // If the user still hasn't started streaming video by this time, then reveal the gift card
         if (!user.voice.selfVideo) {
@@ -44,7 +47,13 @@ async function checkStreaming() {
       }, 1000 * 60 * 30);
     }
   } else {
-    clearTimeout(timeout);
+    notStreamingMessage?.delete();
+    notStreamingMessage = null;
+    console.info("User is streaming his video and the timeout was cleared.");
+    if (timeout !== null) {
+      clearTimeout(timeout);
+    }
+    timeout = null;
   }
 }
 
@@ -67,11 +76,6 @@ client.on("ready", async () => {
     process.env.VOICE_CHANNEL_ID!
   )) as Discord.VoiceChannel;
 
-  // At 9:30PM every day, kick the user out of the voice
-  schedule.scheduleJob("30 21 * * *", () => {
-    user.voice.setChannel(null);
-  });
-
   // At 8:30AM every day, check if user is streaming
   schedule.scheduleJob("30 8 * * *", () => {
     checkStreaming();
@@ -86,6 +90,7 @@ client.on("ready", async () => {
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
+  console.log(oldState);
   if (oldState.member?.id !== process.env.USER_ID!) return;
 
   checkStreaming();
