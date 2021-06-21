@@ -12,7 +12,7 @@ const client = new Discord.Client();
 
 async function revealGiftCard() {
   await updatesChannel.send(
-    `LeonStreams has been offline for 30 minutes. Gift card code: ${process.env
+    `${user.nickname} has been offline for 30 minutes. Gift card code: ${process.env
       .GIFT_CARD_CODE!}`
   );
 }
@@ -32,7 +32,7 @@ async function checkStreaming() {
   }
 
   if (!user.voice.selfVideo) {
-    await updatesChannel.send("LeonStreams is not streaming his video...");
+    await updatesChannel.send(`${user.nickname} is not streaming his video...`);
     timeout = setTimeout(async () => {
       await revealGiftCard();
     }, 1000 * 60 * 30);
@@ -60,13 +60,18 @@ client.on("ready", async () => {
     process.env.VOICE_CHANNEL_ID!
   )) as Discord.VoiceChannel;
 
-  // At 9:30PM every day, kick LeonStreams out of the voice
+  // At 9:30PM every day, kick the user out of the voice
   schedule.scheduleJob("30 21 * * *", () => {
     user.voice.setChannel(null);
   });
 
-  // At 8:30AM every day, check if LeonStreams is streaming
+  // At 8:30AM every day, check if user is streaming
   schedule.scheduleJob("30 8 * * *", () => {
+    checkStreaming();
+  });
+
+  // Every minute, check if the user is streaming
+  schedule.scheduleJob("* 8-21 * * *", () => {
     checkStreaming();
   });
 
