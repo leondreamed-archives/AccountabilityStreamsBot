@@ -18,6 +18,10 @@ async function revealGiftCard() {
   );
 }
 
+async function doesUserHaveVideo() {
+  return user.voice.channel && user.voice.selfVideo;
+}
+
 async function checkStreaming() {
   // If it's before 8:30AM or past 9:30PM, return
   const date = new Date();
@@ -32,12 +36,12 @@ async function checkStreaming() {
     return;
   }
 
-  if (!user.voice.channel || !user.voice.selfVideo) {
+  if (!doesUserHaveVideo()) {
     console.info("User is not streaming his video...");
     if (timeout === null) {
       timeout = setTimeout(async () => {
         // If the user still hasn't started streaming video by 15 mins, then reveal the gift card
-        if (!user.voice.selfVideo) {
+        if (!doesUserHaveVideo()) {
           await revealGiftCard();
         }
       }, 1000 * 60 * 15);
