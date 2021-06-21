@@ -86,7 +86,7 @@ client.on("ready", async () => {
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
-  if (newState.member?.id !== process.env.USER_ID!) return;
+  if (oldState.member?.id !== process.env.USER_ID!) return;
 
   checkStreaming();
 });
