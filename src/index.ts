@@ -12,7 +12,7 @@ const client = new Discord.Client();
 
 async function revealGiftCard() {
   await updatesChannel.send(
-    `${user.nickname} has been offline for 30 minutes. Gift card code: ${process.env
+    `${user.displayName} has been offline for 30 minutes. Gift card code: ${process.env
       .GIFT_CARD_CODE!}`
   );
 }
@@ -32,7 +32,7 @@ async function checkStreaming() {
   }
 
   if (!user.voice.selfVideo) {
-    await updatesChannel.send(`${user.nickname} is not streaming his video...`);
+    await updatesChannel.send(`${user.displayName} is not streaming his video...`);
     timeout = setTimeout(async () => {
       await revealGiftCard();
     }, 1000 * 60 * 30);
