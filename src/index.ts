@@ -21,12 +21,21 @@ async function revealGiftCard() {
 }
 
 function doesUserHaveVideo() {
-  return user.voice.channel !== null && user.voice.channelID === process.env.VOICE_CHANNEL_ID && user.voice.selfVideo;
+  return (
+    user.voice.channel !== null &&
+    user.voice.channelID === process.env.VOICE_CHANNEL_ID &&
+    user.voice.selfVideo
+  );
 }
 
 async function checkStreaming() {
   // Don't perform any checks if the gift card has already been revealed
-  if (giftCardRevealed) return;
+  if (giftCardRevealed) {
+    console.info(
+      "The gift card has already been revealed, streaming check skipped."
+    );
+    return;
+  }
 
   // If it's before 8:30AM or past 9:30PM, return
   const date = new Date();
@@ -85,13 +94,8 @@ client.on("ready", async () => {
     process.env.VOICE_CHANNEL_ID!
   )) as Discord.VoiceChannel;
 
-  // At 8:30AM every day, check if user is streaming
-  schedule.scheduleJob("30 8 * * *", () => {
-    checkStreaming();
-  });
-
   // Every minute, check if the user is streaming
-  schedule.scheduleJob("* 8-21 * * *", () => {
+  schedule.scheduleJob("* * * * *", () => {
     checkStreaming();
   });
 
@@ -99,7 +103,6 @@ client.on("ready", async () => {
 });
 
 client.on("voiceStateUpdate", async (oldState, newState) => {
-  console.log(oldState);
   if (oldState.member?.id !== process.env.USER_ID!) return;
 
   checkStreaming();
