@@ -47,6 +47,9 @@ async function checkStreaming() {
 
   // If it's before 8:30AM or past 9:30PM, return
   const date = dayjs();
+  console.info(
+    `Current hour: ${date.hour()}; Current minute: ${date.minute()}`
+  );
 
   // Before 8:30AM
   if (date.hour() * 60 + date.minute() < 8 * 60 + 30) {
