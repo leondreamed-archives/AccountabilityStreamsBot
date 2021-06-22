@@ -9,6 +9,7 @@
     "heroku-postbuild": "tsc --outDir dist/"
   },
   "dependencies": {
+    "dayjs": "^1.10.5",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
     "node-schedule": "^2.0.0"

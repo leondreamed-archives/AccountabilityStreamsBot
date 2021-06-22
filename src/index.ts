@@ -1,6 +1,14 @@
 import "dotenv/config";
 import Discord from "discord.js";
 import schedule from "node-schedule";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault("America/Toronto");
 
 let timeout: NodeJS.Timeout | null = null;
 let updatesChannel: Discord.TextChannel;
@@ -38,15 +46,15 @@ async function checkStreaming() {
   }
 
   // If it's before 8:30AM or past 9:30PM, return
-  const date = new Date();
+  const date = dayjs();
 
   // Before 8:30AM
-  if (date.getHours() * 60 + date.getMinutes() < 8 * 60 + 30) {
+  if (date.hour() * 60 + date.minute() < 8 * 60 + 30) {
     return;
   }
 
   // Past 9:30PM
-  if (date.getHours() * 60 + date.getMinutes() > 21 * 60 + 30) {
+  if (date.hour() * 60 + date.minute() > 21 * 60 + 30) {
     return;
   }
 
