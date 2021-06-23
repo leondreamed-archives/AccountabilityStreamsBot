@@ -48,11 +48,11 @@ function shouldCheck({ ignoreBuffer }: { ignoreBuffer: boolean }) {
 	const nineThirtyPM = 21 * 60 + 30;
 
 	if (ignoreBuffer) {
-		return elapsedMinutes >= eightThirtyAM && elapsedMinutes > nineThirtyPM;
+		return elapsedMinutes >= eightThirtyAM && elapsedMinutes < nineThirtyPM;
 	} else {
 		return (
-			elapsedMinutes >= nineThirtyPM &&
-			elapsedMinutes > nineThirtyPM + bufferMinutes
+			elapsedMinutes >= eightThirtyAM &&
+			elapsedMinutes < nineThirtyPM + bufferMinutes
 		);
 	}
 }
