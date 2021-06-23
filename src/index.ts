@@ -1,9 +1,9 @@
-import "dotenv/config";
-import Discord from "discord.js";
-import schedule from "node-schedule";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import Discord from "discord.js";
+import "dotenv/config";
+import schedule from "node-schedule";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -17,12 +17,13 @@ let guild: Discord.Guild;
 let user: Discord.GuildMember;
 let notStreamingMessage: Discord.Message | null = null;
 let giftCardRevealed = false;
+const bufferMinutes = 15;
 
 const client = new Discord.Client();
 
 async function revealGiftCard() {
 	await updatesChannel.send(
-		`${user.toString()} hasn't been streaming video for 15 minutes. Gift card code: ${process
+		`${user.toString()} hasn't been streaming video for ${bufferMinutes} minutes. Gift card code: ${process
 			.env.GIFT_CARD_CODE!}`
 	);
 	giftCardRevealed = true;
@@ -36,6 +37,26 @@ function doesUserHaveVideo() {
 	);
 }
 
+function shouldCheck({ ignoreBuffer }: { ignoreBuffer: boolean }) {
+	const date = dayjs();
+	const hour = date.tz().hour();
+	const minute = date.tz().minute();
+
+	console.info(`Current hour: ${hour}; Current minute: ${minute}`);
+	let elapsedMinutes = hour * 60 + minute;
+	const eightThirtyAM = 8 * 60 + 30;
+	const nineThirtyPM = 21 * 60 + 30;
+
+	if (ignoreBuffer) {
+		return elapsedMinutes >= eightThirtyAM && elapsedMinutes > nineThirtyPM;
+	} else {
+		return (
+			elapsedMinutes >= nineThirtyPM &&
+			elapsedMinutes > nineThirtyPM + bufferMinutes
+		);
+	}
+}
+
 async function checkStreaming() {
 	// Don't perform any checks if the gift card has already been revealed
 	if (giftCardRevealed) {
@@ -45,23 +66,13 @@ async function checkStreaming() {
 		return;
 	}
 
-	// If it's before 8:30AM or past 9:30PM, return
-	const date = dayjs();
-	const hour = date.tz().hour();
-	const minute = date.tz().minute();
-	console.info(`Current hour: ${hour}; Current minute: ${minute}`);
-
-	// Before 8:30AM
-	if (hour * 60 + minute < 8 * 60 + 30) {
-		return;
-	}
-
-	// Past 9:30PM
-	if (hour * 60 + minute >= 21 * 60 + 30) {
-		return;
-	}
+	// If it's before 8:30AM or after 9:45PM, no need to check video.
+	if (!shouldCheck({ ignoreBuffer: false })) return;
 
 	if (!doesUserHaveVideo()) {
+		// Don't announce the user isn't streaming if it's not between 8:30AM and 9:30PM
+		if (!shouldCheck({ ignoreBuffer: true })) return;
+
 		console.info("User is not streaming his video...");
 		if (timeout === null) {
 			timeout = setTimeout(async () => {
@@ -69,7 +80,7 @@ async function checkStreaming() {
 				if (!doesUserHaveVideo()) {
 					await revealGiftCard();
 				}
-			}, 1000 * 60 * 15);
+			}, 1000 * 60 * bufferMinutes);
 			let message = await updatesChannel.send(
 				`${user.toString()} is not streaming his video...`
 			);
