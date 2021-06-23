@@ -57,7 +57,7 @@ async function checkStreaming() {
   }
 
   // Past 9:30PM
-  if (hour * 60 + minute > 21 * 60 + 30) {
+  if (hour * 60 + minute >= 21 * 60 + 30) {
     return;
   }
 
