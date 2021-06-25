@@ -7,6 +7,7 @@ import { scheduleTzJob } from "./schedule";
 import tesseract from "node-tesseract-ocr";
 import Jimp from "jimp";
 import fs from "fs";
+import dayjs from "dayjs";
 
 const tesseractConfig = {
 	lang: "eng",
@@ -32,8 +33,25 @@ const userIds = [
 const sleepCycleScreenshotWidth = 1242;
 const sleepCycleScreenshotHeight = 2359;
 
-const topLeft = { x: 50, y: 100 };
-const bottomRight = { x: 1000, y: 250 };
+function checkSleepCycleDate(dateString: string) {
+	console.info(`Matching date string ${dateString}`);
+	const matches = dateString.trim().match(/(\d+)-(\d+)\s(\w+)/);
+
+	if (matches === null) {
+		return false;
+	}
+
+	const [_, _firstDate, secondDateString, monthString] = matches;
+
+	const today = dayjs();
+	const todayDate = today.tz().date();
+	const todayMonth = today.tz().month();
+
+	const secondDate = Number(secondDateString);
+	const month = Number(monthString);
+
+	return secondDate === todayDate && todayMonth === month;
+}
 
 export function registerSleepCyclePlugin(client: Discord.Client) {
 	// Request the sleep cycle message at 8:30AM
@@ -89,15 +107,22 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 						}
 					}
 				);
-				image.crop(maxX, 0, image.getWidth() - maxX, image.getHeight());
-
+				image.crop(
+					maxX + 10,
+					0,
+					image.getWidth() - maxX - 10,
+					image.getHeight()
+				);
 				const imageBuffer = await image.getBufferAsync("image/jpeg");
 				fs.writeFileSync("image.jpg", imageBuffer);
 
 				const text = await tesseract.recognize(imageBuffer, tesseractConfig);
-				message.channel.send(`Date detected: ${text.trim()}`);
-				console.info("Sleep cycle screenshot detected.");
-				latestSleepCycleMessage = message;
+				if (checkSleepCycleDate(text)) {
+					message.channel.send(`Valid date: ${text}, screenshot accepted.`);
+					latestSleepCycleMessage = message;
+				} else {
+					message.channel.send(`Invalid date: ${text}, screenshot rejected.`);
+				}
 			}
 		}
 	});
