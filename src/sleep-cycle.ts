@@ -32,6 +32,21 @@ const userIds = [
 const sleepCycleScreenshotWidth = 1242;
 const sleepCycleScreenshotHeight = 2359;
 
+const months = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
+];
+
 function checkSleepCycleDate(dateString: string) {
 	console.info(`Matching date string ${dateString}`);
 	const matches = dateString.match(/(\d+)-(\d+)\s(\w+)/);
@@ -47,9 +62,8 @@ function checkSleepCycleDate(dateString: string) {
 	const todayMonth = today.tz().month();
 
 	const secondDate = Number(secondDateString);
-	const month = Number(monthString);
 
-	return secondDate === todayDate && todayMonth === month;
+	return secondDate === todayDate && months[todayMonth] === monthString;
 }
 
 export function registerSleepCyclePlugin(client: Discord.Client) {
