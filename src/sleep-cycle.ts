@@ -86,7 +86,11 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 	});
 
 	client.on("message", async (message) => {
-		if (userIds.includes(message.author.id) && message.attachments.size > 0) {
+		if (
+			message.content.toLowerCase().includes("sleep cycle") &&
+			userIds.includes(message.author.id) &&
+			message.attachments.size > 0
+		) {
 			const attachment = message.attachments.first()!;
 			if (
 				attachment.height === sleepCycleScreenshotHeight &&
