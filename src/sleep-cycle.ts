@@ -55,8 +55,8 @@ function checkSleepCycleDate(dateString: string) {
 export function registerSleepCyclePlugin(client: Discord.Client) {
 	// Request the sleep cycle message at 8:30AM
 	const requestRule = new schedule.RecurrenceRule();
-	requestRule.minute = 30;
 	requestRule.hour = 8;
+	requestRule.minute = 30;
 	scheduleTzJob(requestRule, () => {
 		if (latestSleepCycleMessage === null) {
 			requestSleepCycle();
@@ -65,8 +65,8 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 
 	// Check if the user sent a sleep cycle screenshot at 8:45AM
 	const checkRule = new schedule.RecurrenceRule();
-	checkRule.minute = 45;
 	checkRule.hour = 8;
+	checkRule.minute = 45;
 	scheduleTzJob(checkRule, () => {
 		// If user didn't send a sleep cycle screenshot, reset
 		if (latestSleepCycleMessage === null) {
