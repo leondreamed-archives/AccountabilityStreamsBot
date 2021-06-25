@@ -6,7 +6,6 @@ import { revealGiftCard } from "./gift-card";
 import { scheduleTzJob } from "./schedule";
 import tesseract from "node-tesseract-ocr";
 import Jimp from "jimp";
-import fs from "fs";
 import dayjs from "dayjs";
 
 const tesseractConfig = {
@@ -64,10 +63,10 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 		}
 	});
 
+	// Check if the user sent a sleep cycle screenshot at 8:45AM
 	const checkRule = new schedule.RecurrenceRule();
 	checkRule.minute = 45;
 	checkRule.hour = 8;
-	// Check if the user sent a sleep cycle screenshot at 8:45AM
 	scheduleTzJob(checkRule, () => {
 		// If user didn't send a sleep cycle screenshot, reset
 		if (latestSleepCycleMessage === null) {
@@ -75,6 +74,14 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 				`${user.toString()} failed to provide a sleep cycle screenshot.`
 			);
 		}
+		latestSleepCycleMessage = null;
+	});
+
+	// Reset the sleep cycle screenshot at 12:00AM
+	const checkRUle = new schedule.RecurrenceRule();
+	checkRule.minute = 0;
+	checkRule.hour = 0;
+	scheduleTzJob(checkRule, () => {
 		latestSleepCycleMessage = null;
 	});
 
@@ -114,8 +121,6 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 					image.getHeight()
 				);
 				const imageBuffer = await image.getBufferAsync("image/jpeg");
-				fs.writeFileSync("image.jpg", imageBuffer);
-
 				const text = await tesseract.recognize(imageBuffer, tesseractConfig);
 				if (checkSleepCycleDate(text)) {
 					message.channel.send(`Valid date: ${text}, screenshot accepted.`);
