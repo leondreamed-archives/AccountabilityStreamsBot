@@ -3,6 +3,7 @@ import schedule from "node-schedule";
 import Discord from "discord.js";
 import { user } from "./user";
 import { revealGiftCard } from "./gift-card";
+import { scheduleTzJob } from "./schedule";
 
 let latestSleepCycleMessage: Discord.Message | null = null;
 
@@ -24,14 +25,20 @@ const sleepCycleScreenshotHeight = 2359;
 
 export function registerSleepCyclePlugin(client: Discord.Client) {
 	// Request the sleep cycle message at 8:30AM
-	schedule.scheduleJob("30 8 * * *", () => {
+	const requestRule = new schedule.RecurrenceRule();
+	requestRule.minute = 30;
+	requestRule.hour = 8;
+	scheduleTzJob(requestRule, () => {
 		if (latestSleepCycleMessage === null) {
 			requestSleepCycle();
 		}
 	});
 
+	const checkRule = new schedule.RecurrenceRule();
+	checkRule.minute = 45;
+	checkRule.hour = 8;
 	// Check if the user sent a sleep cycle screenshot at 8:45AM
-	schedule.scheduleJob("45 8 * * *", () => {
+	scheduleTzJob(checkRule, () => {
 		// If user didn't send a sleep cycle screenshot, reset
 		if (latestSleepCycleMessage === null) {
 			revealGiftCard(

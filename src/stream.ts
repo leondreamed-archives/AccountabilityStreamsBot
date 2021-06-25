@@ -5,6 +5,7 @@ import { user } from "./user";
 import schedule from "node-schedule";
 import Discord from "discord.js";
 import { giftCardRevealed, revealGiftCard } from "./gift-card";
+import { scheduleTzJob } from "./schedule";
 
 export const bufferMinutes = 15;
 let timeout: NodeJS.Timeout | null = null;
@@ -81,7 +82,8 @@ export async function checkStreaming() {
 }
 
 export function registerStreamPlugin(client: Discord.Client) {
-	schedule.scheduleJob("* * * * *", () => {
+	const rule = new schedule.RecurrenceRule();
+	scheduleTzJob(rule, () => {
 		checkStreaming();
 	});
 
