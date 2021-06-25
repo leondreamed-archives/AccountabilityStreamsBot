@@ -78,9 +78,9 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 	});
 
 	// Reset the sleep cycle screenshot at 12:00AM
-	const checkRUle = new schedule.RecurrenceRule();
-	checkRule.minute = 0;
-	checkRule.hour = 0;
+	const resetRule = new schedule.RecurrenceRule();
+	resetRule.minute = 0;
+	resetRule.hour = 0;
 	scheduleTzJob(checkRule, () => {
 		latestSleepCycleMessage = null;
 	});
