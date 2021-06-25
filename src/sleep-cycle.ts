@@ -81,7 +81,7 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 	const resetRule = new schedule.RecurrenceRule();
 	resetRule.minute = 0;
 	resetRule.hour = 0;
-	scheduleTzJob(checkRule, () => {
+	scheduleTzJob(resetRule, () => {
 		latestSleepCycleMessage = null;
 	});
 
