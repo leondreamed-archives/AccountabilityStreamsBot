@@ -1,6 +1,6 @@
 import { updatesChannel } from "./channel";
 import schedule from "node-schedule";
-import Discord, { Message } from "discord.js";
+import Discord from "discord.js";
 import { user } from "./user";
 import { revealGiftCard } from "./gift-card";
 
