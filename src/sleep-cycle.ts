@@ -18,7 +18,7 @@ let latestSleepCycleMessage: Discord.Message | null = null;
 
 export function requestSleepCycle() {
 	updatesChannel.send(
-		`${process.env.USER_ID}, please send your Sleep Cycle screenshot within the next 15 minutes.`
+		`${user.toString()}, please send your Sleep Cycle screenshot within the next 15 minutes.`
 	);
 }
 
