@@ -34,7 +34,7 @@ const sleepCycleScreenshotHeight = 2359;
 
 function checkSleepCycleDate(dateString: string) {
 	console.info(`Matching date string ${dateString}`);
-	const matches = dateString.trim().match(/(\d+)-(\d+)\s(\w+)/);
+	const matches = dateString.match(/(\d+)-(\d+)\s(\w+)/);
 
 	if (matches === null) {
 		return false;
@@ -121,7 +121,9 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 					image.getHeight()
 				);
 				const imageBuffer = await image.getBufferAsync("image/jpeg");
-				const text = await tesseract.recognize(imageBuffer, tesseractConfig);
+				const text = (
+					await tesseract.recognize(imageBuffer, tesseractConfig)
+				).trim();
 				if (checkSleepCycleDate(text)) {
 					message.channel.send(`Valid date: ${text}, screenshot accepted.`);
 					latestSleepCycleMessage = message;
