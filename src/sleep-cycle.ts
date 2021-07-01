@@ -7,6 +7,7 @@ import { scheduleTzJob } from "./schedule";
 import tesseract from "node-tesseract-ocr";
 import Jimp from "jimp";
 import dayjs from "dayjs";
+import { match } from "assert/strict";
 
 const tesseractConfig = {
 	lang: "eng",
@@ -49,13 +50,26 @@ const months = [
 
 function checkSleepCycleDate(dateString: string) {
 	console.info(`Matching date string ${dateString}`);
-	const matches = dateString.match(/(\d+)-(\d+)\s(\w+)/);
+	let matches = dateString.match(
+		/(\d+)-(\d+)\s(\w+)|(\d+)\s(\w+)-(\d+)\s(\w+)/
+	);
 
 	if (matches === null) {
 		return false;
 	}
 
-	const [_, _firstDate, secondDateString, monthString] = matches;
+	let secondDateString: string;
+	let monthString: string;
+	// e.g. 28-29 Jun
+	if (matches[1] !== undefined) {
+		secondDateString = matches[2];
+		monthString = matches[3];
+	}
+	// e.g. 30 Jun-1 Jul
+	else {
+		secondDateString = matches[6];
+		monthString = matches[7];
+	}
 
 	const today = dayjs();
 	const todayDate = today.tz().date();
