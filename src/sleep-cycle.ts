@@ -7,7 +7,7 @@ import { scheduleTzJob } from "./schedule";
 import tesseract from "node-tesseract-ocr";
 import Jimp from "jimp";
 import dayjs from "dayjs";
-import { match } from "assert/strict";
+import fs from "fs";
 
 const tesseractConfig = {
 	lang: "eng",
@@ -144,6 +144,17 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 								maxX = x;
 							}
 						}
+
+						// Turn the image black-and-white
+						if (red === 6 && green === 22 && blue === 32) {
+							this.bitmap.data[idx] = 255;
+							this.bitmap.data[idx + 1] = 255;
+							this.bitmap.data[idx + 2] = 255;
+						} else {
+							this.bitmap.data[idx] = 0;
+							this.bitmap.data[idx + 1] = 0;
+							this.bitmap.data[idx + 2] = 0;
+						}
 					}
 				);
 				image.crop(
@@ -153,6 +164,7 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 					image.getHeight()
 				);
 				const imageBuffer = await image.getBufferAsync("image/jpeg");
+				fs.writeFileSync("image.jpg", imageBuffer);
 				const text = (
 					await tesseract.recognize(imageBuffer, tesseractConfig)
 				).trim();
