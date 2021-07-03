@@ -7,7 +7,6 @@ import { scheduleTzJob } from "./schedule";
 import tesseract from "node-tesseract-ocr";
 import Jimp from "jimp";
 import dayjs from "dayjs";
-import fs from "fs";
 
 const tesseractConfig = {
 	lang: "eng",
@@ -164,7 +163,6 @@ export function registerSleepCyclePlugin(client: Discord.Client) {
 					image.getHeight()
 				);
 				const imageBuffer = await image.getBufferAsync("image/jpeg");
-				fs.writeFileSync("image.jpg", imageBuffer);
 				const text = (
 					await tesseract.recognize(imageBuffer, tesseractConfig)
 				).trim();
