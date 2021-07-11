@@ -3,7 +3,11 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import "dotenv/config";
 import { setUser } from "./user";
-import { setUpdatesChannel, setVoiceChannel, updatesChannel } from "./channel";
+import {
+	setGiftCardChannel,
+	setUpdatesChannel,
+	setVoiceChannel,
+} from "./channel";
 import { guild, setGuild } from "./guild";
 import Discord from "discord.js";
 import { registerSleepCyclePlugin } from "./sleep-cycle";
@@ -38,6 +42,13 @@ client.on("ready", async () => {
 		(await client.channels.fetch(
 			process.env.VOICE_CHANNEL_ID!
 		)) as Discord.VoiceChannel
+	);
+
+	console.info("Fetching gift card channel...");
+	setGiftCardChannel(
+		(await client.channels.fetch(
+			process.env.GIFT_CARD_CHANNEL_ID!
+		)) as Discord.TextChannel
 	);
 
 	registerSleepCyclePlugin(client);

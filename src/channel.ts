@@ -10,3 +10,9 @@ export let voiceChannel: VoiceChannel;
 export function setVoiceChannel(channel: VoiceChannel) {
 	voiceChannel = channel;
 }
+
+export let giftCardChannel: TextChannel;
+
+export function setGiftCardChannel(channel: TextChannel) {
+	giftCardChannel = channel;
+}
